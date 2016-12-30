@@ -45,7 +45,7 @@ class AsterDialect_jdbc(AsterDialect):
             r = ([],
                  {
                      'jclassname': 'com.asterdata.ncluster.Driver',
-                     'jars': ['/root/noarch-aster-jdbc-driver.jar'],
+                     'jars': ['//usr//jars//noarch-aster-jdbc-driver.jar'],
                      'driver_args': [
                          'jdbc:ncluster://{host}:{port}/{database}/?autocommit=false' \
                               .format(**url.translate_connect_args()),
