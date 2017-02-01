@@ -23,6 +23,7 @@ from sqlalchemy.types import (
     INTEGER, BIGINT, SMALLINT, FLOAT, NUMERIC, REAL,
     CHAR, VARCHAR, TEXT, DATE, BOOLEAN
 )
+import pandas as pd
 
 
 RESERVED_WORDS = set(
@@ -295,10 +296,10 @@ class AsterIdentifierPreparer(compiler.IdentifierPreparer):
 class AsterExecutionContext(default.DefaultExecutionContext):
     pass
 
-def set_schema_names(schema_names = [u'model_factory', u'public']):
-    global schemas
-    schemas = schema_names
-    return schemas
+#def set_schema_names(schema_names = [u'model_factory', u'public']):
+#    global schemas
+#    schemas = schema_names
+#    return schemas
 
 class AsterDialect(default.DefaultDialect):
     name = 'aster'
@@ -368,16 +369,39 @@ class AsterDialect(default.DefaultDialect):
 
     @reflection.cache
     def get_schema_names(self, connection, **kw):
-        # result = connection.execute("select schemaname from nc_system.nc_all_schemas where valid = true and schemaname not like 'nc_%'")
-        # table_names = [r[0] for r in result]
-        return schemas #[u'model_factory', u'public']
+        #sql = """
+        #select schemaname from nc_system.nc_all_schemas where valid = true and schemaname not like 'nc_%'
+        #"""
+        #table = pd.read_sql(sql, connection)
+        #schemas = table.schemaname.tolist()
+
+        schemas = []
+        s = connection.connection.jconn.getMetaData().getSchemas()
+        s.next()
+        while s.next():
+            if s.getString(1)[:3] != 'nc_':
+                schemas.append(s.getString(1))
+
+        return schemas
 
     @reflection.cache
     def get_table_names(self, connection, schema=None, **kw):
-        #result = connection.execute("select tablename from nc_system.nc_all_tables where valid = true and tablename not like 'nc_%'")
-        #table_names = [r[0] for r in result]
-        return []#[u'model_varimp', u'model_scores', u'model_backtesting', u'model_test_results',\
-               # u'metadata_table', u'model_overview',u'model_summary']
+        #sql = """
+        #select tablename from nc_system.nc_all_tables where valid = true and tablename not like 'nc_%'
+        #"""
+        #table = pd.read_sql(sql, connection)
+        #tables = table.tablename.tolist()
+
+        tables = []
+
+        s = connection.connection.jconn.getMetaData().getTables(None, None, "%", None)
+        s.next()
+        while s.next():
+            if s.getString(2)[:3] != 'nc_':
+                tables.append(s.getString(3))
+
+        return tables
+        #return []
 
 
 
