@@ -48,9 +48,6 @@ class AsterDialect_jdbc(AsterDialect):
                  {}
             )
 
-        #jaydebeapi.connect("com.asterdata.ncluster.Driver",
-        #                   'jdbc:ncluster://queen02.ds.gen.local:2406/beehive', ['vecht499', 'Eiblamde6!']
-        #                   , 'noarch-aster-jdbc-driver.jar')
         else:
             r = ([],
                  {
